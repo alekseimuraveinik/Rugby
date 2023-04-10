@@ -30,7 +30,12 @@ struct XcodeBuild {
 			if arch == "auto" {
 				arch = sdk.defaultARCH
 			}
-            arguments.append("ARCHS=\(arch)")
+            switch sdk {
+            case .sim:
+                arguments.append("ARCHS=\"\(ARCH.x86_64) \(ARCH.arm64)\"")
+            case .ios:
+                arguments.append("ARCHS=\(arch)")
+            }
         }
         if let config = config {
             arguments.append("-config \(config.shellFriendly)")
