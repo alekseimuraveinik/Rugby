@@ -88,6 +88,14 @@ struct CacheCleanupStep: Step {
             metrics.targetsCount.after = project.pbxproj.main.targets.count
         }
 
+        progress.print("Remove built frameworks".yellow, level: .vv)
+        let buildFolder = try Folder.current.subfolder(at: .buildFolder)
+        for folder in buildFolder.subfolders {
+            if folder.name.hasPrefix(CONFIG.debug) || folder.name.hasPrefix(CONFIG.release) {
+                try folder.delete()
+            }
+        }
+
         done()
     }
 }

@@ -71,6 +71,11 @@ extension CachePrepareStep {
             .union(selectedTargets.map(\.name))
             .union(selectedTargets.compactMap(\.productName))
 
+        if let xcFrameworksFolder = try? Folder.current.subfolder(at: "/XCFrameworks") {
+            progress.print("Remove old XCFrameworks".yellow, level: .vv)
+            try xcFrameworksFolder.delete()
+        }
+
         done()
         return Output(scheme: buildTargets.isEmpty ? nil : buildTarget,
                       targets: targets,

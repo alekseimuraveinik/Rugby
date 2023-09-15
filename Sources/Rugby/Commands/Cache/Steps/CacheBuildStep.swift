@@ -19,6 +19,7 @@ struct CacheBuildStep: Step {
         let scheme: String?
         let buildInfo: BuildInfo
         let swift: String?
+        let targets: Set<String>
     }
 
     let verbose: Int
@@ -49,15 +50,16 @@ struct CacheBuildStep: Step {
         }
 
         let xcargs = xcargsProvider.xcargs(bitcode: command.bitcode, withoutDebugSymbols: command.offDebugSymbols)
+
         for (sdk, arch) in zip(input.buildInfo.sdk, input.buildInfo.arch) {
-            try progress.spinner("Building \("\(sdk)-\(arch): \(command.config ?? "Debug")".yellow)") {
+            try progress.spinner("Building \("\(sdk)-\(arch): \(CONFIG.release)".yellow)") {
                 do {
                     try XcodeBuild(
                         project: .podsProject,
                         scheme: scheme,
                         sdk: sdk,
                         arch: arch,
-                        config: command.config,
+                        config: CONFIG.release,
                         xcargs: xcargs
                     ).build()
                 } catch {
@@ -69,23 +71,28 @@ struct CacheBuildStep: Step {
             }
         }
 
+        try progress.spinner("Building \("xcframework: \(CONFIG.release)".yellow)") {
+            try XcodeFrameworkReleaseBuild(targets: input.targets).build()
+        }
+
         try progress.spinner("Update checksums") {
             for (sdk, arch) in zip(input.buildInfo.sdk, input.buildInfo.arch) {
                 let newChecksums = try checksumsProvider.getChecksums(forPods: input.buildInfo.pods)
-                let cachedChecksums = cacheManager.checksumsMap(sdk: sdk, config: command.config)
+                let cachedChecksums = cacheManager.checksumsMap(sdk: sdk, config: CONFIG.release)
                 let updatedChecksums = newChecksums.reduce(into: cachedChecksums) { checksums, new in
                     checksums[new.name] = new
                 }
                 let checksums = updatedChecksums.map(\.value.string).sorted()
                 let newCache = BuildCache(sdk: sdk,
                                           arch: arch,
-                                          config: command.config,
+                                          config: CONFIG.release,
                                           swift: input.swift,
                                           xcargs: xcargs,
                                           checksums: checksums)
                 try cacheManager.update(cache: newCache)
             }
         }
+
         done()
     }
 }
