@@ -42,6 +42,7 @@ extension String {
 
     static let rugbyPatched = "RUGBY_PATCHED"
     static let rugbyHasBackup = "RUGBY_HAS_BACKUP"
+    static let frameworkSearchPaths = "FRAMEWORK_SEARCH_PATHS"
     static let yes: Any = "YES"
 
     // MARK: - Cache command
