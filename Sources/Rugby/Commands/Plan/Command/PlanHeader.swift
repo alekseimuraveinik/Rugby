@@ -40,7 +40,6 @@ struct Plans: ParsableCommand {
     private func runCache() throws {
         var cache = Cache()
         cache.arch = cacheOptions.arch
-        cache.config = cacheOptions.config
         cache.sdk = cacheOptions.sdk
         cache.bitcode = cacheOptions.bitcode
         cache.keepSources = cacheOptions.keepSources

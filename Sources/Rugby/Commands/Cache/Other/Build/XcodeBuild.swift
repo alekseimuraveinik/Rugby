@@ -13,7 +13,6 @@ struct XcodeBuild {
     let scheme: String
     let sdk: SDK
     let arch: String?
-    let config: String?
     let xcargs: [String]
 
     func build() throws {
@@ -37,9 +36,8 @@ struct XcodeBuild {
                 arguments.append("ARCHS=\(arch)")
             }
         }
-        if let config = config {
-            arguments.append("-config \(config.shellFriendly)")
-        }
+
+        arguments.append("-config \(CONFIG.release.shellFriendly)")
         arguments.append("| tee " + .rawBuildLog)
 
         try XcodeBuildRunner(rawLogPath: .rawBuildLog, logPath: .buildLog).run(

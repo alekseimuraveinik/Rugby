@@ -8,7 +8,6 @@
 
 struct CacheDecodable: Decodable {
     let arch: [String]?
-    let config: String?
     let sdk: [SDK]?
     let bitcode: Bool?
     let keepSources: Bool?
@@ -30,8 +29,7 @@ struct CacheDecodable: Decodable {
 extension Cache {
     init(from decodable: CacheDecodable) {
         self.arch = decodable.arch ?? []
-        self.config = decodable.config
-        self.sdk = decodable.sdk ?? [.sim]
+        self.sdk = decodable.sdk ?? [.sim, .ios]
         self.bitcode = decodable.bitcode ?? false
         self.keepSources = decodable.keepSources ?? false
         self.exclude = decodable.exclude ?? []

@@ -12,14 +12,13 @@ import Yams
 struct BuildCache: Codable {
     let sdk: SDK
     let arch: String?
-    let config: String?
     let swift: String?
     let xcargs: [String]?
     let checksums: [String]?
 }
 
-private func cacheKey(sdk: SDK, config: String?) -> String {
-    [config, sdk.xcodebuild]
+private func cacheKey(sdk: SDK) -> String {
+    [CONFIG.release, sdk.xcodebuild]
         .compactMap { $0 }
         .joined(separator: "-")
 }
@@ -38,7 +37,7 @@ struct CacheManager {
     func update(cache: BuildCache) throws {
         // Update only selected sdk cache
         var cacheFile = load() ?? [:]
-        let key = cacheKey(sdk: cache.sdk, config: cache.config)
+        let key = cacheKey(sdk: cache.sdk)
         cacheFile[key] = cache
 
         // Save
@@ -52,8 +51,8 @@ struct CacheManager {
 // MARK: - Load by key
 
 extension CacheManager {
-    func load(sdk: SDK, config: String?) -> BuildCache? {
-        let key = cacheKey(sdk: sdk, config: config)
+    func load(sdk: SDK) -> BuildCache? {
+        let key = cacheKey(sdk: sdk)
         return load()?[key]
     }
 }
@@ -61,8 +60,8 @@ extension CacheManager {
 // MARK: - Checksums
 
 extension CacheManager {
-    func checksumsMap(sdk: SDK, config: String?) -> [String: Checksum] {
-        load(sdk: sdk, config: config)?.checksumsMap() ?? [:]
+    func checksumsMap(sdk: SDK) -> [String: Checksum] {
+        load(sdk: sdk)?.checksumsMap() ?? [:]
     }
 }
 

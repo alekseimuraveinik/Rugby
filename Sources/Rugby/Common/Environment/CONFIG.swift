@@ -6,5 +6,5 @@
 //
 
 enum CONFIG {
-    static let debug = "Debug"
+    static let release = "Release"
 }

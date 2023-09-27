@@ -40,11 +40,10 @@ extension CacheSubstepFactory {
             var buildSDKs: [SDK] = []
             var buildARCHs: [String] = []
             for (sdk, arch) in zip(command.sdk, command.arch) {
-                let cache = CacheManager().load(sdk: sdk, config: command.config)
+                let cache = CacheManager().load(sdk: sdk)
                 let invalidCache = (
                     arch != cache?.arch
                         || swiftVersion != cache?.swift
-                        || command.config != cache?.config
                         || xcargs != cache?.xcargs
                 )
                 if let checksums = cache?.checksumsMap(), !command.ignoreChecksums, !invalidCache {
