@@ -20,37 +20,9 @@ struct FilePatcher {
             try autoreleasepool {
                 var content = try file.readAsString()
                 content = content.replacingOccurrences(of: lookup, with: replace, options: .regularExpression)
+                content = content.replacingOccurrences(of: "$(CONFIGURATION)", with: CONFIG.release)
                 try file.write(content)
             }
-        }
-    }
-
-    func updateFrameworkSearchPaths(inFilesByRegEx fileRegEx: String, folder: Folder) throws {
-        let regex = try fileRegEx.regex()
-        for file in folder.files.recursive where file.path.match(regex) {
-            try updateFrameworkSearchPaths(for: file)
-        }
-    }
-}
-
-private extension FilePatcher {
-    func updateFrameworkSearchPaths(for file: File) throws {
-        var content = try file.readAsString()
-
-        let releasePlatform = CONFIG.release
-
-        content = content.replacingOccurrences(
-            of: "$(CONFIGURATION)",
-            with: releasePlatform
-        )
-
-        content = content.replacingOccurrences(
-            of: "${CONFIGURATION}",
-            with: releasePlatform
-        )
-
-        try autoreleasepool {
-            try file.write(content)
         }
     }
 }
